@@ -37,7 +37,7 @@ def main():
                 updated = (license_text[idx] == updated_text)
                 break
         if not updated:
-            os.rmdir(repo["name"])
+            shutil.rmtree(repo["name"])
         with open(license_file_path, "w") as f:
             for line in license_text:
                 f.write(line)
