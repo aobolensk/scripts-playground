@@ -28,16 +28,19 @@ def main():
             r = re.match(r"Copyright \(c\) (\d{4})-?(\d{4})? (.*)", line.strip())
             if r is not None:
                 old_year = r.group(1)
+                if old_year == year:
+                    break
                 new_year = year
                 if len(r.groups()) == 2:
                     rest = r.group(2)
                 else:
                     rest = r.group(3)
                 license_text[idx] = updated_text = f"Copyright (c) {old_year}-{new_year} {rest}\n"
-                updated = (license_text[idx] == updated_text)
+                updated = (license_text[idx] != updated_text)
                 break
         if not updated:
             shutil.rmtree(repo["name"])
+            break
         with open(license_file_path, "w") as f:
             for line in license_text:
                 f.write(line)
@@ -45,7 +48,8 @@ def main():
         git_repo.index.add("LICENSE")
         git_repo.git.checkout("-b", git_branch_name)
         git_repo.index.commit(f"Update LICENSE for {year} year")
-        git_repo.git.push("--set-upstream", "origin", git_branch_name)
+        if input(f"Updated repo '{repo['html_url']}'. Do you want to push it? (y/N) ").lower() == "y":
+            git_repo.git.push("--set-upstream", "origin", git_branch_name)
         shutil.rmtree(repo["name"])
 
 if __name__ == "__main__":
