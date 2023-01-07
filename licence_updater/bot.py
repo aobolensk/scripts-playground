@@ -44,6 +44,7 @@ def main():
         with open(license_file_path, "w") as f:
             for line in license_text:
                 f.write(line)
+        os.chmod(license_file_path, 0o644)
         git_branch_name = f"automation/license_{year}_update"
         git_repo.index.add("LICENSE")
         git_repo.git.checkout("-b", git_branch_name)
